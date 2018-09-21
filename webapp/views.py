@@ -21,8 +21,6 @@ def admin_required(*roles):
 	return wrapper
 '''
 
-
-
 def admin_required(f):	
 	@wraps(f)
 	def wrapped(*args, **kwargs):
