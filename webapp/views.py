@@ -2,9 +2,10 @@ from webapp import app, db
 from flask import  render_template, url_for, redirect, session, flash, request
 from webapp.forms import LoginForm, AddUser, ServiceWork
 from werkzeug.security import generate_password_hash
-from webapp.models import User, Role
+from webapp.models import User, Role, Registrator
 from flask_login import login_required, login_user, current_user, logout_user
 from functools import wraps
+from webapp.tables import RegistratorTable
 
 
 
@@ -36,7 +37,9 @@ def admin_required(f):
 @login_required
 def index():
 	form = ServiceWork()
-	return render_template('index.html', form=form)
+	items = Registrator.query.all()
+	table = RegistratorTable(items)
+	return render_template('index.html', form=form, table=table)
 
 
 @app.route('/login', methods = ['GET', 'POST'])
@@ -68,6 +71,12 @@ def add_user():
 		flash('Пользователь добавлен')
 		total_users = User.query.all()
 	return render_template('add_user.html', form=form, total_users=total_users)
+
+@app.route('/registrator/<serial_num>', methods=['GET', 'POST'])
+@login_required
+def edit(serial_num):
+	return "Test"
+
 
 
 @app.route('/logout') 

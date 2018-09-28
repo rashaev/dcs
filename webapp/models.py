@@ -2,9 +2,11 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from webapp import db, login_manager
 
+
+
 class User(UserMixin, db.Model):
 	__tablename__ = 'users'
-	id = db.Column(db.Integer, primary_key = True)
+	id = db.Column(db.Integer, primary_key=True)
 	username = db.Column(db.String(64), unique=True, index=True)
 	password_hash = db.Column(db.String(128))
 	role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
@@ -27,14 +29,23 @@ class Role(UserMixin, db.Model):
 	def __repr__(self):
 		return self.name
 
+class Registrator(db.Model):
+	__tablename__ = 'registrator'
+	serial_num = db.Column(db.String(12), primary_key=True, index=True)
+	ip_main = db.Column(db.String(15), unique=True, nullable=False)
+	ipm_evc = db.Column(db.String(15))
+	reg_id = db.Column(db.String(7), nullable=False, unique=True)
+	region = db.Column(db.String, db.ForeignKey('regions.name'))
+
 
 class regions(db.Model):
-	__tablename__ = "regions"
+	__tablename__ = 'regions'
 	name = db.Column(db.String(30), primary_key=True)
 	src_evc_key = db.Column(db.String(120))
 	dst_evc_keys = db.Column(db.String(120))
 	src_prod_keys = db.Column(db.String(120))
 	dst_prod_keys = db.Column(db.String(120))
+	registrators = db.relationship('Registrator', backref='region_', lazy='dynamic')
 
 	def __repr__(self):
 		return self.name
