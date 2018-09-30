@@ -21,12 +21,12 @@ class AddUser(FlaskForm):
 			raise ValidationError('Имя пользователя уже используется.')
 
 class ServiceWork(FlaskForm):
-	region = QuerySelectField(query_factory=choice_region, allow_blank=False)	
+	region = QuerySelectField(query_factory=choice_region, allow_blank=True, blank_text="Выбирите регион")	
 	ip_addr_1 = StringField('IP address', validators=[DataRequired(), IPAddress()])
 	ip_addr_2 = StringField('IP address', validators = [Optional(), IPAddress()])
 	reg_id = StringField('RegID', validators=[DataRequired()])
 	serial_num = StringField('Serial number', validators = [DataRequired()])
-	submit = SubmitField('Настроить')
+	submit = SubmitField('Добавить')
 
 class AddRegion(FlaskForm):
 	name = StringField('Name', validators=[DataRequired()])

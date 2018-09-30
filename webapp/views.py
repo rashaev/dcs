@@ -72,10 +72,21 @@ def add_user():
 		total_users = User.query.all()
 	return render_template('add_user.html', form=form, total_users=total_users)
 
-@app.route('/registrator/<serial_num>', methods=['GET', 'POST'])
+@app.route('/registrator/<ser_num>', methods=['GET', 'POST'])
 @login_required
-def edit(serial_num):
-	return "Test"
+def edit(ser_num):
+	form = ServiceWork()
+	registrator = Registrator.query.filter_by(serial_num=ser_num).first()
+	if form.validate_on_submit():
+		reg_edit = Registrator.query.filter_by(serial_num=str(ser_num)).update(dict(ip_main=str(form.ip_addr_1.data), ipm_evc=str(form.ip_addr_2.data), reg_id=str(form.reg_id.data), region=str(form.region.data)))
+		db.session.commit()
+		return redirect(url_for('index'))
+	return render_template('registrator.html', form=form, registrator=registrator)
+
+@app.route('/registrator/delete/<ser_num>', methods=['GET', 'POST'])
+@login_required
+def delete(serial_num):
+	return "Delete"
 
 
 

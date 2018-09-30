@@ -35,8 +35,10 @@ class Registrator(db.Model):
 	ip_main = db.Column(db.String(15), unique=True, nullable=False)
 	ipm_evc = db.Column(db.String(15))
 	reg_id = db.Column(db.String(7), nullable=False, unique=True)
-	region = db.Column(db.String, db.ForeignKey('regions.name'))
+	region = db.Column(db.String(), db.ForeignKey('regions.name'))
 
+	def __repr__(self):
+		return self.serial_num
 
 class regions(db.Model):
 	__tablename__ = 'regions'

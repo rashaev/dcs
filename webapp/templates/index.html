@@ -58,31 +58,9 @@
     </nav>
 
     <main role="main" class="container">
+<br>
 
-  <form class="form-inline">
-  <label class="sr-only" for="inlineFormInputRegion2">Регион</label>
-  <!-- <input type="text" class="form-control mb-2 mr-sm-2" id="inlineFormInputName2" placeholder="Jane Doe"> -->
-  {{ form.region(type="text", class="form-control form-control-sm mb-2 mr-sm-2", id="inlineFormInputRegion2") }}
-
-  <label class="sr-only" for="inlineFormInputIP1">IP адресс</label>
-  {{ form.ip_addr_1(type="text", class="form-control form-control-sm mb-2 mr-sm-2", id="inlineFormInputIP1", placeholder="IP адрес(осн.)") }}
-
-   <label class="sr-only" for="inlineFormInputIP2">IP адресс</label>
-  {{ form.ip_addr_2(type="text", class="form-control form-control-sm mb-2 mr-sm-2", id="inlineFormInputIP2", placeholder="IP адрес(ЕВЦ)") }}
-
-  <label class="sr-only" for="inlineFormInputRegid">Рег.ид.</label>
-  {{ form.reg_id(type="text", class="form-control form-control-sm mb-2 mr-sm-2", id="inlineFormInputRegid", placeholder="Рег.id") }}
-
-  <label class="sr-only" for="inlineFormInputSerialNum">Серийный</label>
-  {{ form.serial_num(type="text", class="form-control form-control-sm mb-2 mr-sm-2", id="inlineFormInputSerialNum", placeholder="Серийный номер") }}
-
-  <!-- <button type="button" class="btn btn-primary btn-sm">Настроить</button> -->
-  {{ form.submit(type="submit", class="btn btn-primary mb-2 btn-sm") }}
-</form>
-
-<br><br>
 {{table}}
-
 
     </main><!-- /.container -->
 

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../../../favicon.ico">
+
+    <title></title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/static/css/starter-template.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+  <main role="main" class="container">
+
+<h6>Свойства регистратора {{ registrator.serial_num }}</h6>
+  <form class="form-group w-25" method="POST">
+  {{ form.csrf_token() }}
+    <label class="sr-only" for="FormInputSerialNum">Серийный</label>
+  {{ form.serial_num(type="text", value=registrator.serial_num, class="form-control form-control-sm mb-2 mr-sm-2", id="FormInputSerialNum") }}
+
+  <label class="sr-only" for="FormInputIP1">IP адресс</label>
+  {{ form.ip_addr_1(type="text", value=registrator.ip_main, class="form-control form-control-sm mb-2 mr-sm-2", id="FormInputIP1" ) }}
+
+   <label class="sr-only" for="FormInputIP2">IP адресс</label>
+  {{ form.ip_addr_2(type="text", value=registrator.ipm_evc, class="form-control form-control-sm mb-2 mr-sm-2", id="FormInputIP2") }}
+
+  <label class="sr-only" for="FormInputRegid">Рег.ид.</label>
+  {{ form.reg_id(type="text", value=registrator.reg_id, class="form-control form-control-sm mb-2 mr-sm-2", id="FormInputRegid") }}
+
+ <label class="sr-only" for="FormInputRegion2">Регион</label>
+  {{ form.region(type="text", class="form-control form-control-sm mb-2 mr-sm-2", id="FormInputRegion2") }}
+  
+
+  {{ form.submit(type="submit", class="btn btn-primary mb-2 btn-sm") }}
+</form>
+
+  </main><!-- /.container -->
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+  </body>
+</html>
