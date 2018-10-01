@@ -8,20 +8,6 @@ from functools import wraps
 from webapp.tables import RegistratorTable
 
 
-
-'''
-def admin_required(*roles):	
-	def wrapper(f):
-		@wraps(f)
-		def wrapped(*args, **kwargs):
-			if str(current_user.role) not in roles:
-				flash('Требуются права администратора')
-				return redirect(url_for('login', next=request.url))
-			return f(*args, **kwargs)
-		return wrapped
-	return wrapper
-'''
-
 def admin_required(f):	
 	@wraps(f)
 	def wrapped(*args, **kwargs):
@@ -80,13 +66,17 @@ def edit(ser_num):
 	if form.validate_on_submit():
 		reg_edit = Registrator.query.filter_by(serial_num=str(ser_num)).update(dict(ip_main=str(form.ip_addr_1.data), ipm_evc=str(form.ip_addr_2.data), reg_id=str(form.reg_id.data), region=str(form.region.data)))
 		db.session.commit()
+		flash('Регистратор %s успешно изменен' % registrator.serial_num)
 		return redirect(url_for('index'))
 	return render_template('registrator.html', form=form, registrator=registrator)
 
-@app.route('/registrator/delete/<ser_num>', methods=['GET', 'POST'])
+@app.route('/delete/<ser_num>', methods=['GET', 'POST'])
 @login_required
-def delete(serial_num):
-	return "Delete"
+def delete(ser_num):
+	reg_del = Registrator.query.filter_by(serial_num=ser_num).delete()
+	db.session.commit()
+	flash('Регистратор %s удален' % ser_num)
+	return redirect(url_for('index'))
 
 
 

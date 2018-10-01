@@ -26,7 +26,7 @@ class ServiceWork(FlaskForm):
 	ip_addr_2 = StringField('IP address', validators = [Optional(), IPAddress()])
 	reg_id = StringField('RegID', validators=[DataRequired()])
 	serial_num = StringField('Serial number', validators = [DataRequired()])
-	submit = SubmitField('Добавить')
+	submit = SubmitField('Изменить')
 
 class AddRegion(FlaskForm):
 	name = StringField('Name', validators=[DataRequired()])
