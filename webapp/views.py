@@ -22,10 +22,12 @@ def admin_required(f):
 @app.route('/')
 @login_required
 def index():
-	form = ServiceWork()
 	items = Registrator.query.all()
-	table = RegistratorTable(items)
-	return render_template('index.html', form=form, table=table)
+	#table = RegistratorTable(items)
+	page = request.args.get('page', 1, type=int)
+	pagination = Registrator.query.order_by(Registrator.serial_num).paginate(page, per_page=app.config['FLASKY_POSTS_PER_PAGE'], error_out=True)
+	table = RegistratorTable(pagination.items)
+	return render_template('index.html', table=table, pagination=pagination)
 
 
 @app.route('/login', methods = ['GET', 'POST'])

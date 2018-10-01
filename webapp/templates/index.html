@@ -1,3 +1,4 @@
+{% import "_macros.html" as macros %}
 <!doctype html>
 <html lang="en">
   <head>
@@ -68,6 +69,10 @@
 </div>
       {% endfor %}
 {{table}}
+
+<div class="pagination">
+    {{ macros.pagination_widget(pagination, 'index') }}
+</div>
 
     </main><!-- /.container -->
 
