@@ -6,6 +6,7 @@ from webapp.models import User, Role, Registrator
 from flask_login import login_required, login_user, current_user, logout_user
 from functools import wraps
 from webapp.tables import RegistratorTable
+import sqlalchemy
 
 
 def admin_required(f):	
@@ -19,15 +20,29 @@ def admin_required(f):
 	
 
 
-@app.route('/')
+@app.route('/', methods = ['GET', 'POST'])
 @login_required
 def index():
+	form = ServiceWork()
 	items = Registrator.query.all()
-	#table = RegistratorTable(items)
 	page = request.args.get('page', 1, type=int)
 	pagination = Registrator.query.order_by(Registrator.serial_num).paginate(page, per_page=app.config['FLASKY_POSTS_PER_PAGE'], error_out=True)
 	table = RegistratorTable(pagination.items)
-	return render_template('index.html', table=table, pagination=pagination)
+	if form.validate_on_submit() and form.submit.data:
+		registrator = Registrator.query.filter_by(serial_num=form.serial_num.data).first()
+		if registrator is None:
+			new_reg = Registrator(serial_num=str(form.serial_num.data), ip_main=str(form.ip_addr_1.data), ipm_evc=str(form.ip_addr_2.data), reg_id=str(form.reg_id.data), region=str(form.region.data))
+			try:
+				db.session.add(new_reg)
+				db.session.commit()
+				flash('Регистратор %s добавлен' % form.serial_num.data, 'success')
+			except (sqlalchemy.exc.IntegrityError) as error:
+				if 'duplicate key value violates unique constraint' in error.args[0]:
+					flash('Регистратор не был добавлен. Подробности в лог файле', 'warning')
+			return redirect(url_for('index'))
+		else:
+			flash("Регистратор %s уже существует" % form.serial_num.data, 'warning')
+	return render_template('index.html', table=table, pagination=pagination, form=form)
 
 
 @app.route('/login', methods = ['GET', 'POST'])

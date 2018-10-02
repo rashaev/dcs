@@ -59,17 +59,85 @@
     </nav>
 
     <main role="main" class="container">
+
 <br>
-{% for message in get_flashed_messages() %} 
-      <div class="alert alert-success alert-dismissible fade show" role="alert">
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#AddModal">Добавить</button>
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#SortModal">Сортировать</button>
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#FilterModal">Фильтр</button>
+
+<div class="modal fade" id="AddModal" tabindex="-1" role="dialog" aria-labelledby="AddModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="AddModalLabel">Добавление нового регистратора</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+  <form class="form-group w-100" method="POST">
+  {{ form.csrf_token() }}
+  <div class="form-group row">
+    <label class="col-sm-2 col-form-label " for="FormInputSerialNum">Серийный</label>
+    <div class="col-sm-7">
+  {{ form.serial_num(type="text", class="form-control  mb-2 mr-sm-2", id="FormInputSerialNum") }}
+   </div>
+  </div>
+  <div class="form-group row">
+  <label class="col-sm-2 col-form-label" for="FormInputIP1">IP(осн.)</label>
+  <div class="col-sm-7">
+  {{ form.ip_addr_1(type="text", class="form-control mb-2 mr-sm-2", id="FormInputIP1" ) }}
+  </div>
+  </div>
+  <div class="form-group row">
+   <label class="col-sm-2 col-form-label" for="FormInputIP2">IP(евц)</label>
+   <div class="col-sm-7">
+  {{ form.ip_addr_2(type="text", class="form-control mb-2 mr-sm-2", id="FormInputIP2") }}
+   </div>
+  </div>
+
+  <div class="form-group row">
+  <label class="col-sm-2 col-form-label" for="FormInputRegid">Рег.ид.</label>
+  <div class="col-sm-7">
+  {{ form.reg_id(type="text", class="form-control mb-2 mr-sm-2", id="FormInputRegid") }}
+  </div>
+  </div>
+
+  <div class="form-group row">
+ <label class="col-sm-2 col-form-label" for="FormInputRegion2">Регион</label>
+  <div class="col-sm-7">
+  {{ form.region(type="text", class="form-control  mb-2 mr-sm-2", id="FormInputRegion2") }}
+  </div>
+  </div>  
+
+  <div class="form-group row">
+    <div class="col-sm-7">
+  {{ form.submit(type="submit", class="btn btn-primary mb-2") }}
+    </div>
+  </div>
+
+</form>
+    </div>
+    </div>
+  </div>
+</div>
+
+<br>
+<br>
+
+{% for category, message in get_flashed_messages(with_categories=true) %} 
+      <div class="alert alert-{{category}} alert-dismissible fade show" role="alert">
     {{message}}.
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
-      {% endfor %}
+{% endfor %}
+
 {{table}}
 
+<br>
 <div class="pagination">
     {{ macros.pagination_widget(pagination, 'index') }}
 </div>
