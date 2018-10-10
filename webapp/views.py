@@ -6,7 +6,8 @@ from webapp.models import User, Role, Registrator
 from flask_login import login_required, login_user, current_user, logout_user
 from functools import wraps
 from webapp.tables import RegistratorTable
-import sqlalchemy
+from sqlalchemy import exc
+from webapp.tasks import *
 
 
 def admin_required(f):	
@@ -29,6 +30,11 @@ def index():
 	pagination = Registrator.query.order_by(Registrator.serial_num).paginate(page, per_page=app.config['FLASKY_POSTS_PER_PAGE'], error_out=True)
 	table = RegistratorTable(pagination.items)
 	if form.validate_on_submit() and form.submit.data:
+		ip1 = form.ip_addr_1.data
+		if form.setup.data:
+			print("Checkbox is True")
+			print(find_main_keys(form.ip_addr_1.data))
+			copy_main_keys.delay(ip1)
 		registrator = Registrator.query.filter_by(serial_num=form.serial_num.data).first()
 		if registrator is None:
 			new_reg = Registrator(serial_num=str(form.serial_num.data), ip_main=str(form.ip_addr_1.data), ipm_evc=str(form.ip_addr_2.data), reg_id=str(form.reg_id.data), region=str(form.region.data))
@@ -36,7 +42,7 @@ def index():
 				db.session.add(new_reg)
 				db.session.commit()
 				flash('Регистратор %s добавлен' % form.serial_num.data, 'success')
-			except (sqlalchemy.exc.IntegrityError) as error:
+			except (exc.IntegrityError) as error:
 				if 'duplicate key value violates unique constraint' in error.args[0]:
 					flash('Регистратор не был добавлен. Подробности в лог файле', 'warning')
 			return redirect(url_for('index'))
@@ -92,7 +98,7 @@ def edit(ser_num):
 def delete(ser_num):
 	reg_del = Registrator.query.filter_by(serial_num=ser_num).delete()
 	db.session.commit()
-	flash('Регистратор %s удален' % ser_num)
+	flash('Регистратор %s удален' % ser_num, 'success')
 	return redirect(url_for('index'))
 
 
