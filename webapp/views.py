@@ -32,8 +32,6 @@ def index():
 	if form.validate_on_submit() and form.submit.data:
 		ip1 = form.ip_addr_1.data
 		if form.setup.data:
-			print("Checkbox is True")
-			print(find_main_keys(form.ip_addr_1.data))
 			copy_main_keys.delay(ip1)
 		registrator = Registrator.query.filter_by(serial_num=form.serial_num.data).first()
 		if registrator is None:

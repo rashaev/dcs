@@ -34,18 +34,17 @@ def find_main_keys(main_ip):
 def copy_main_keys(ip1):
 	file_list = find_main_keys(ip1)
 	for fl in file_list:
-		filesize = os.stat(fl).st_size
-		handshake = pickle.dumps((os.path.basename(fl), filesize))
+		#filesize = os.stat(fl).st_size
+		handshake = pickle.dumps(os.path.basename(fl))
 		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		sock.connect(("192.168.10.99", 5566))
-		sock.send(handshake)
+		sock.connect(("10.10.1.15", 5566))
+		sock.sendall(handshake)
 		response = sock.recv(2).decode()
-		print(response)
 		if response == 'OK':
-			print("Transfer file", fl)
 			file = open(fl, 'rb')
-			data = file.read(filesize)
-			print(len(data))
-			sock.send(data)
+			data = file.read(1024)
+			while data:
+				sock.send(data)
+				data = file.read(1024)
 			file.close()
-			sock.close()
+		sock.close()
