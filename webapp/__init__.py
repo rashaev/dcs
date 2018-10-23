@@ -14,7 +14,7 @@ login_manager.login_message = "Пожалуйста авторизуйтесь"
 
 
 def make_celery(app):
-    celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+    celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'], enable_utc=False)
     celery.conf.update(app.config)
     TaskBase = celery.Task
     class ContextTask(TaskBase):

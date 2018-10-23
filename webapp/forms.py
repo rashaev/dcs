@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, ValidationError, DateField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.validators import DataRequired, Length, Regexp, Optional, IPAddress
-from webapp.models import choice_role, choice_region, User
+from webapp.models import choice_role, choice_region, User, Regions
 
 class LoginForm(FlaskForm):
 	username = StringField('Login', validators=[DataRequired()])
@@ -31,8 +31,9 @@ class ServiceWork(FlaskForm):
 
 class AddRegion(FlaskForm):
 	name = StringField('Name', validators=[DataRequired()])
-	src_prod_keys = StringField('Source production keys', validators=[DataRequired()])
-	dst_prod_keys = StringField('Destination production keys', validators=[DataRequired()])
-	src_evc_keys = StringField('Source evc keys')
-	dst_evc_keys = StringField('Destination evc keys')
+	keys_dir = StringField('Keys directory')
 	submit = SubmitField('Добавить')
+
+	def validate_name(self, field):
+		if Regions.query.filter_by(name=field.data).first():
+			raise ValidationError('Такой регион уже существует')

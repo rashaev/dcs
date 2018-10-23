@@ -66,7 +66,7 @@
 <div class="row">
 <div class="col-md-4">
 
-<h6>Добавить нового пользователя</h6>
+<h6>Добавить регион</h6>
 <br>
 {% for category, message in get_flashed_messages(with_categories=true) %} 
 <div class="alert alert-{{category}} alert-dismissible fade show" role="alert">
@@ -79,27 +79,17 @@
 <form  method="POST">
   {{ form.csrf_token() }}
   <div class="form-group row">
-    <label for="inputUsername3" class="col-sm-2 col-form-label">Логин</label>
+    <label for="inputRegionName" class="col-sm-2 col-form-label">Регион</label>
     <div class="col-sm-10">
-      <!-- <input type="login" class="form-control" id="inputUsername3" placeholder="Username"> -->
-      {{ form.username(type="login", class="form-control", id="inputUsername3") }}
+      {{ form.name(type="text", class="form-control", id="inputRegionName") }}
     </div>
   </div>
   <div class="form-group row">
-    <label for="inputPassword3" class="col-sm-2 col-form-label">Пароль</label>
+    <label for="inputKeysDir" class="col-sm-2 col-form-label">Каталог</label>
     <div class="col-sm-10">
-      <!-- <input type="password" class="form-control" id="inputPassword3" placeholder="Password"> -->
-      {{ form.password(type="password", class="form-control", id="inputPassword3") }}
+      {{ form.keys_dir(type="text", class="form-control", id="inputKeysDir") }}
     </div>
   </div>
-
-  <div class="form-group row">
-  <label for="SelectRole" class="col-sm-2 col-form-label">Роль</label>
-  <div class="col-sm-10">
-  {{ form.role(class="custom-select my-1 mr-sm-2", id="SelectRole") }}
-  </div>
-  </div>
-
   <div class="form-group row">
     <div class="col-sm-10">
       <!-- <button type="submit" class="btn btn-primary">Create</button>-->

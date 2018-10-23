@@ -1,6 +1,7 @@
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from webapp import db, login_manager
+import datetime
 
 
 
@@ -31,6 +32,7 @@ class Role(UserMixin, db.Model):
 
 class Registrator(db.Model):
 	__tablename__ = 'registrator'
+	created_date = db.Column(db.DateTime, default=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 	serial_num = db.Column(db.String(12), primary_key=True, index=True)
 	ip_main = db.Column(db.String(15), unique=True, nullable=False)
 	ipm_evc = db.Column(db.String(15))
@@ -40,13 +42,10 @@ class Registrator(db.Model):
 	def __repr__(self):
 		return self.serial_num
 
-class regions(db.Model):
+class Regions(db.Model):
 	__tablename__ = 'regions'
 	name = db.Column(db.String(30), primary_key=True)
-	src_evc_key = db.Column(db.String(120))
-	dst_evc_keys = db.Column(db.String(120))
-	src_prod_keys = db.Column(db.String(120))
-	dst_prod_keys = db.Column(db.String(120))
+	keys_dir = db.Column(db.String(20))
 	registrators = db.relationship('Registrator', backref='region_', lazy='dynamic')
 
 	def __repr__(self):
@@ -61,4 +60,4 @@ def choice_role():
 	return Role.query
 
 def choice_region():
-	return regions.query
+	return Regions.query

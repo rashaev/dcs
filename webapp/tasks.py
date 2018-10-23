@@ -1,9 +1,19 @@
 from webapp import celery
 from webapp import app
+from celery.exceptions import Ignore, MaxRetriesExceededError
+from celery import states
 import os
 import os.path
 import pickle
 import socket
+
+
+# function for converting ip address format aaa.bbb.ccc.ddd to ccc-ddd format
+def convert_id(evc_ip):
+	ip_octets = evc_ip.split('.')
+	evc_id= '*' + str(ip_octets[2]).rjust(3, '0') + '-' + str(ip_octets[3]).rjust(3, '0') + '*'
+	return evc_id
+
 
 # function for converting  serial number of registrator to IP
 def make_service_ip(serial_id):
@@ -27,17 +37,31 @@ def find_main_keys(main_ip):
 	main_keys.append(keyfile)
 	main_keys.append(cafile)
 	return main_keys
+'''
+def find_evc_keys():
 
+	evc_keys = glob.glob(os.path.join(path_evc_key, convert_id(msg['IP2'])))
+	evc_keys.append(os.path.join(path_evc_key, 'ca.crt'))
+	return evc_keys
+'''
 
-
-@celery.task
-def copy_main_keys(ip1):
+@celery.task(bind=True)
+def copy_main_keys(self, ip1):
 	file_list = find_main_keys(ip1)
 	for fl in file_list:
 		#filesize = os.stat(fl).st_size
 		handshake = pickle.dumps(os.path.basename(fl))
 		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		sock.connect(("10.10.1.15", 5566))
+		try:
+			sock.connect(("10.10.1.15", 5566))
+
+		except ConnectionRefusedError as err:
+			if self.request.retries == 3:
+				self.update_state(state=states.FAILURE, meta='Connection refused to remote host. Max attemts exceeded')
+				raise Ignore()
+				return
+			else:
+				raise self.retry(countdown=10, max_retries=3)
 		sock.sendall(handshake)
 		response = sock.recv(2).decode()
 		if response == 'OK':
@@ -48,3 +72,8 @@ def copy_main_keys(ip1):
 				data = file.read(1024)
 			file.close()
 		sock.close()
+
+'''
+@celery.task
+def copy_evc_keys(self, ip2):
+'''
