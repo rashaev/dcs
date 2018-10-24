@@ -32,8 +32,12 @@ def index():
 	table = RegistratorTable(pagination.items)
 	if form.validate_on_submit() and form.submit.data:
 		ip1 = form.ip_addr_1.data
+		ip2 = form.ip_addr_2.data
+		region = str(form.region.data)
 		if form.setup.data:
 			copy_main_keys.delay(ip1)
+			copy_evc_keys.delay(ip2, region)
+
 		registrator = Registrator.query.filter_by(serial_num=form.serial_num.data).first()
 		if registrator is None:
 			new_reg = Registrator(serial_num=str(form.serial_num.data), ip_main=str(form.ip_addr_1.data), ipm_evc=str(form.ip_addr_2.data), reg_id=str(form.reg_id.data), region=str(form.region.data), created_date=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
@@ -122,9 +126,12 @@ def delete(ser_num):
 @app.route('/delete_region/<name>', methods=['GET', 'POST'])
 @login_required
 def del_region(name):
-	region_del = Regions.query.filter_by(name=name).delete()
-	db.session.commit()
-	flash('Регион %s удален' % name, 'success')
+	try:
+		region_del = Regions.query.filter_by(name=name).delete()
+		db.session.commit()
+		flash('Регион %s удален' % name, 'success')
+	except (exc.IntegrityError) as error:
+		flash('Регион не был удален. Ошибка: %s' % error.args[0], 'danger')
 	return redirect(url_for('add_region'))
 
 @app.route('/delete_user/<user_name>', methods=['GET', 'POST'])
