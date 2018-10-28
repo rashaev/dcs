@@ -52,7 +52,7 @@ def copy_main_keys(self, ip1):
 	file_list = find_main_keys(ip1)
 	for fl in file_list:
 		#filesize = os.stat(fl).st_size
-		handshake = pickle.dumps(('copy_prod_keys', os.path.basename(fl)))
+		handshake = pickle.dumps(('cp_prod_keys', os.path.basename(fl)))
 		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		try:
 			sock.connect(("10.10.1.15", 5566))
@@ -81,7 +81,7 @@ def copy_evc_keys(self, ip2, region):
 	file_list = find_evc_keys(ip2, region)
 	reg = Regions.query.filter_by(name=region).first()
 	for fl in file_list:
-		handshake = pickle.dumps(('copy_evc_keys', reg.keys_dir, os.path.basename(fl)))
+		handshake = pickle.dumps(('cp_evc_keys', reg.keys_dir, os.path.basename(fl)))
 		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		try:
 			sock.connect(("10.10.1.15", 5566))
@@ -102,4 +102,31 @@ def copy_evc_keys(self, ip2, region):
 				data = file.read(1024)
 			file.close()
 		sock.close()
+	
 
+@celery.task(bind=True)
+def copy_vpn_conf(self, ip2, region):
+	id = convert_id(ip2).strip('*')
+	reg = Regions.query.filter_by(name=region).first()
+	conf_name = reg.keys_dir + '.conf'
+	handshake = pickle.dumps(('cp_vpn_conf', conf_name, id))
+	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	try:
+			sock.connect(("10.10.1.15", 5566))
+	except ConnectionRefusedError as err:
+		if self.request.retries == 3:
+			self.update_state(state=states.FAILURE, meta='Connection refused to remote host. Max attemts exceeded')
+			raise Ignore()
+			return
+		else:
+			raise self.retry(countdown=60, max_retries=3)
+	sock.sendall(handshake)
+	response = sock.recv(2).decode()
+	if response == 'OK':
+		file = open(os.path.join(app.config['EVC_KEYS_DIR'], reg.keys_dir, conf_name), 'rb')
+		data = file.read(1024)
+		while data:
+			sock.send(data)
+			data = file.read(1024)
+		file.close()
+	sock.close()

@@ -8,6 +8,7 @@ from functools import wraps
 from webapp.tables import RegistratorTable, RegionTable, UserTable
 from sqlalchemy import exc
 from webapp.tasks import *
+from celery import chain, signature
 import datetime
 
 
@@ -34,10 +35,11 @@ def index():
 		ip1 = form.ip_addr_1.data
 		ip2 = form.ip_addr_2.data
 		region = str(form.region.data)
-		if form.setup.data:
+		if form.setup.data and len(form.ip_addr_2.data) == 0:
 			copy_main_keys.delay(ip1)
-			copy_evc_keys.delay(ip2, region)
-
+		elif form.setup.data and len(form.ip_addr_2.data) != 0:
+			chain(copy_main_keys.si(ip1) | copy_evc_keys.si(ip2, region) | copy_vpn_conf.si(ip2, region)).apply_async()
+			#copy_vpn_conf.delay(ip2, region)
 		registrator = Registrator.query.filter_by(serial_num=form.serial_num.data).first()
 		if registrator is None:
 			new_reg = Registrator(serial_num=str(form.serial_num.data), ip_main=str(form.ip_addr_1.data), ipm_evc=str(form.ip_addr_2.data), reg_id=str(form.reg_id.data), region=str(form.region.data), created_date=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
@@ -97,7 +99,7 @@ def add_region():
 		region = Regions(name=form.name.data, keys_dir=form.keys_dir.data)
 		db.session.add(region)
 		db.session.commit()
-		flash('Регион добавлен', 'success')
+		flash('Регион %s добавлен' % form.name.data, 'success')
 		items = Regions.query.all()
 		table = RegionTable(items)
 	return render_template('add_region.html', form=form, table=table)
