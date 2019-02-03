@@ -9,7 +9,10 @@ pipeline {
             }
         }
         stage('Test') {
-	    when { GIT_BRANCH == 'origin/master' }
+	    when { 
+		"${GIT_BRANCH}" == 'origin/master'
+}
+
             steps {
                 echo 'Testing..'
             }
