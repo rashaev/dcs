@@ -9,6 +9,12 @@ pipeline {
             }
         }
         stage('Test') {
+	    when {
+		anyOf {
+			branch "master";
+			branch "origin/master"
+}
+}
             steps {
                 echo 'Testing..'
             }
