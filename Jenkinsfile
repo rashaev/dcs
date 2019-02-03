@@ -9,7 +9,7 @@ pipeline {
             }
         }
         stage('Test') {
-	    when { env.BRANCH == 'master' }
+	    when { GIT_BRANCH == 'origin/master' }
             steps {
                 echo 'Testing..'
             }
@@ -17,7 +17,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying....'
-		echo "${env.BRANCH}"
+		echo "${GIT_BRANCH}"
             }
         }
         
