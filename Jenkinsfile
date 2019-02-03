@@ -16,7 +16,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying....'
-		echo $ {env.GIT_BRANCH }
+		echo ${env.GIT_BRANCH}
             }
         }
         
