@@ -9,12 +9,7 @@ pipeline {
             }
         }
         stage('Test') {
-	    when {
-		anyOf {
-			branch "master";
-			branch "origin/master"
-}
-}
+	    when { env.BRANCH == 'master' }
             steps {
                 echo 'Testing..'
             }
@@ -22,7 +17,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying....'
-		echo "${env.GIT_BRANCH}"
+		echo "${env.BRANCH}"
             }
         }
         
